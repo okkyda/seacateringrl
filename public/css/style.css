@@ -859,9 +859,10 @@ body {
     border-radius: 20px;
     padding: 0.9rem 0;
     font-size: 1.1rem;
-    margin-top: 0.8rem;
+    margin-top: 20px;
     cursor: pointer;
     transition: background 0.2s;
+
 }
 
 .btn-submit:hover {
@@ -903,16 +904,54 @@ body {
     color: #fff;
     border-radius: 16px;
     padding: 2rem 1.5rem 1.5rem 1.5rem;
-    max-width: 90vw;
-    width: 350px;
+    max-width: 90vw; /* Menyesuaikan lebar modal agar responsif */
+    width: 350px; /* Lebar modal tetap */
     text-align: center;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
     justify-content: center;
     align-items: center;
     display: flex;
-    /* Menambahkan flexbox pada modal content */
-    flex-direction: column;
-    /* Untuk memastikan konten dalam modal ditata secara vertikal */
+    flex-direction: column; /* Menyusun elemen dalam kolom */
+    margin-left:35%;
+    margin-top: 15%;
+}
+
+.modal-confirm-content h2{
+    margin-bottom: 15px;
+}
+
+.modal-confirm-content .input-name, .input-city{
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #222;
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    transition: border 0.2s;
+    resize: none;
+}
+
+.modal-confirm-content .input-rating{
+    margin-bottom: 10px;
+}
+
+.modal-confirm-content textarea{
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #222;
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    transition: border 0.2s;
+    resize: none;
 }
 
 .modal-confirm-actions {
@@ -1244,9 +1283,19 @@ input[type="radio"]:not(:checked)+.star:hover {
 }
 
 .profile-section,
-.xpay-section,
-.bills-section {
+.xpay-section{
     margin-bottom: 40px;
+    color: var(--bg);
+}
+
+.xpay-section{
+    border: 1px solid black;
+    padding: 13px;
+    border-radius: 5px;
+}
+
+.xpay-section button{
+    margin-top: 10px;
 }
 
 .profile-header {
@@ -1295,10 +1344,15 @@ input[type="radio"]:not(:checked)+.star:hover {
     color: green;
 }
 
-.xpay-section h3,
-.bills-section h3 {
-    font-size: 18px;
+.xpay-section h2,h4
+{/* font-size: 18px; */
     color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.xpay-section h2 span,h4 span
+{/* font-size: 18px; */
+    color: var(--bg);
     margin-bottom: 15px;
 }
 
@@ -1327,18 +1381,32 @@ input[type="radio"]:not(:checked)+.star:hover {
     color: var(--bg);
 }
 
-.block-btn {
-    background-color: white;
-    color: var(--primary);
+.block-btn1 {
+    background-color:var(--primary);
+    color:black;
     border: 1px solid black;
     padding: 8px 15px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.block-btn:hover,
+.block-btn {
+    background-color:#2980b9;
+    color:whitesmoke;
+    border: 1px solid black;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.block-btn1:hover,
 .unblock-btn:hover {
     background-color: var(--primary);
+    color: whitesmoke;
+}
+
+.block-btn:hover{
+    background-color:#11659d;
     color: whitesmoke;
 }
 
@@ -1726,6 +1794,9 @@ input[type="radio"]:not(:checked)+.star:hover {
     color: white;
     font-weight: bold;
 }
+
+
+
 
 
 

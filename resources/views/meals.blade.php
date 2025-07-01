@@ -10,7 +10,7 @@
 </head>
 
 <body>
-<!-- Modal Login Required -->
+    <!-- Modal Login Required -->
     <div id="loginModal" class="modal-logins">
         <div class="modal-login-content">
             <p>Anda harus login terlebih dahulu.</p>
@@ -39,17 +39,21 @@
                 <a href="{{ route('meals') }}" class="active">Meal</a>
                 <a href="{{ route('catchus') }}">Catch Us!</a>
                 @auth
-                    @php
-                        $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
-                            ->where('active_until', '>=', now())
-                            ->exists();
-                    @endphp
-                    @if ($hasSubscription)
-                        <a href="{{ route('dashboard.user') }}"
-                            class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                    @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('dashboard-admin') }}">Dashboard Admin</a>
                     @else
-                        <a href="{{ route('subscription') }}"
-                            class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                        @php
+                            $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
+                                ->where('active_until', '>=', now())
+                                ->exists();
+                        @endphp
+                        @if ($hasSubscription)
+                            <a href="{{ route('dashboard.user') }}"
+                                class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                        @else
+                            <a href="{{ route('subscription') }}"
+                                class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                        @endif
                     @endif
                 @endauth
 
@@ -66,7 +70,7 @@
             @auth
                 <div class="dropdown" style="margin-left: 12px;">
                     <button class="dropbtn">
-                        <img src="{{ Auth::user()->profile_picture ?? asset('image/prof.jpg') }}"
+                        <img src="{{ Auth::user()->profile_picture ?? asset('image/proff.png') }}"
                             class="profile-img-navbar" alt="Profile">
                         <span class="profile-name">{{ Auth::user()->name }}</span>
                         <span>&#9662;</span>

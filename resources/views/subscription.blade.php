@@ -21,17 +21,21 @@
             <a href="{{ route('meals') }}">Meal</a>
             <a href="{{ route('catchus') }}">Catch Us!</a>
             @auth
-                @php
-                    $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
-                        ->where('active_until', '>=', now())
-                        ->exists();
-                @endphp
-                @if ($hasSubscription)
-                    <a href="{{ route('dashboard.user') }}"
-                        class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                @if (auth()->user()->role === 'admin')
+                    <a href="{{ route('dashboard-admin') }}">Dashboard Admin</a>
                 @else
-                    <a href="{{ route('subscription') }}"
-                        class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                    @php
+                        $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
+                            ->where('active_until', '>=', now())
+                            ->exists();
+                    @endphp
+                    @if ($hasSubscription)
+                        <a href="{{ route('dashboard.user') }}"
+                            class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                    @else
+                        <a href="{{ route('subscription') }}"
+                            class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                    @endif
                 @endif
             @endauth
 
@@ -48,7 +52,7 @@
         @auth
             <div class="dropdown" style="margin-left: 12px;">
                 <button class="dropbtn">
-                    <img src="{{ Auth::user()->profile_picture ?? asset('image/prof.jpg') }}" class="profile-img-navbar"
+                    <img src="{{ Auth::user()->profile_picture ?? asset('image/proff.png') }}" class="profile-img-navbar"
                         alt="Profile">
                     <span class="profile-name">{{ Auth::user()->name }}</span>
                     <span>&#9662;</span>
@@ -71,7 +75,9 @@
     <!-- Subscription Form Section -->
     <section class="subscription-section">
         <h2>Subscribe to Your Meal Plan</h2>
-        <form class="subscription-form" id="subscriptionForm" autocomplete="off">
+        <form class="subscription-form" id="subscriptionForm" autocomplete="off" method="POST"
+            action="{{ route('subscriptions.store') }}">
+            @csrf
             <div class="form-group">
                 <label for="name">*Username</label>
                 <input type="text" id="username" name="name" required placeholder="Full Name">
@@ -202,30 +208,9 @@
             });
 
             btnYakin.addEventListener('click', function(e) {
-                e.preventDefault();
+                // Submit form secara normal (POST ke server)
                 modal.classList.remove('active');
-
-                // Send data via AJAX
-                const formData = new FormData(subscriptionForm);
-
-                fetch("{{ route('subscriptions.store') }}", {
-                        method: "POST",
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Display success modal
-                        successModal.style.display = 'block';
-                        subscriptionForm.reset();
-                    })
-                    .catch(error => {
-                        formMessage.innerHTML = 'Terjadi kesalahan. Silakan coba lagi.';
-                        formMessage.style.display = 'block';
-                    });
+                subscriptionForm.submit();
             });
 
             // Close success modal with button
@@ -284,25 +269,25 @@
     </script>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Untuk semua tombol/link dengan class btn-require-login
-    document.querySelectorAll('.btn-require-login').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('loginModal').style.display = 'block';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Untuk semua tombol/link dengan class btn-require-login
+            document.querySelectorAll('.btn-require-login').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('loginModal').style.display = 'block';
+                });
+            });
+            document.getElementById('closeLoginModal').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+            // Tutup modal jika klik di luar kotak modal
+            document.getElementById('loginModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
         });
-    });
-    document.getElementById('closeLoginModal').addEventListener('click', function() {
-        document.getElementById('loginModal').style.display = 'none';
-    });
-    // Tutup modal jika klik di luar kotak modal
-    document.getElementById('loginModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.style.display = 'none';
-        }
-    });
-});
-</script>
+    </script>
 </body>
 
 </html>

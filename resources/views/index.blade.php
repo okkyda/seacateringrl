@@ -40,17 +40,21 @@
                 <a href="{{ route('meals') }}">Meal</a>
                 <a href="{{ route('catchus') }}">Catch Us!</a>
                 @auth
-                    @php
-                        $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
-                            ->where('active_until', '>=', now())
-                            ->exists();
-                    @endphp
-                    @if ($hasSubscription)
-                        <a href="{{ route('dashboard.user') }}"
-                            class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                    @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('dashboard-admin') }}">Dashboard Admin</a>
                     @else
-                        <a href="{{ route('subscription') }}"
-                            class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                        @php
+                            $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
+                                ->where('active_until', '>=', now())
+                                ->exists();
+                        @endphp
+                        @if ($hasSubscription)
+                            <a href="{{ route('dashboard.user') }}"
+                                class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                        @else
+                            <a href="{{ route('subscription') }}"
+                                class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                        @endif
                     @endif
                 @endauth
 
@@ -68,7 +72,7 @@
             @auth
                 <div class="dropdown" style="margin-left: 12px;">
                     <button class="dropbtn">
-                        <img src="{{ Auth::user()->profile_picture ?? asset('image/prof.jpg') }}"
+                        <img src="{{ Auth::user()->profile_picture ?? asset('image/proff.png') }}"
                             class="profile-img-navbar" alt="Profile">
                         <span class="profile-name">{{ Auth::user()->name }}</span>
                         <span>&#9662;</span>
@@ -149,8 +153,8 @@
                     </div>
 
                     <div class="card custom-card">
-                        <img src="./image/meal/meal3.jpg" class="card-img-top" alt="Weight Loss Program" width="300"
-                            height="200" style="border-radius: 16px 16px 0 0;">
+                        <img src="./image/meal/meal3.jpg" class="card-img-top" alt="Weight Loss Program"
+                            width="300" height="200" style="border-radius: 16px 16px 0 0;">
                         <div class="card-body">
                             <h5 class="card-title">Nutrisi Jelas dan Tepat</h5>
                             <p class="card-desc">Setiap hidangan dilengkapi informasi nutrisi lengkap, dengan hal
@@ -228,24 +232,31 @@
     <section id="review" class="review">
         <h2>⭐Customer<span> Reviews</span>⭐</h2>
         <div class="review-container" id="reviewContainer">
+            @foreach ($reviews as $review)
+                <div class="review-card">
+                    <div class="review-text">"{{ $review->review }}"</div>
+                    <div class="review-author">- {{ $review->name }}, {{ $review->city }}
+                        {{ str_repeat('⭐', $review->rating) }}</div>
+                </div>
+            @endforeach
             <div class="review-card">
                 <div class="review-text">"Makanannya enak, sehat, dan pengirimannya selalu tepat waktu. Sangat membantu
                     program diet saya!"</div>
-                <div class="review-author">- Rina, Surabaya</div>
+                <div class="review-author">- Rina, Surabaya ⭐⭐⭐⭐⭐</div>
             </div>
             <div class="review-card">
                 <div class="review-text">"Pilihan menu variatif, pelayanan ramah, dan hasil diet terasa nyata.
                     Recommended!"</div>
-                <div class="review-author">- Andi, Jakarta</div>
+                <div class="review-author">- Andi, Jakarta ⭐⭐⭐⭐</div>
             </div>
             <div class="review-card">
                 <div class="review-text">"Saya suka karena bisa request menu sesuai kebutuhan. Cocok untuk yang sibuk
                     tapi ingin sehat."</div>
-                <div class="review-author">- Sari, Bandung</div>
+                <div class="review-author">- Sari, Bandung ⭐⭐⭐⭐⭐</div>
             </div>
         </div>
 
-        <form class="review-form" id="reviewForm" autocomplete="off" method="POST">
+        {{-- <form class="review-form" id="reviewForm" autocomplete="off" method="POST">
             @csrf
             <!-- Username -->
             <div class="form-group">
@@ -298,7 +309,7 @@
                 <h3>Review Berhasil!</h3>
                 <p>Terima kasih atas review Anda.</p>
             </div>
-        </div>
+        </div> --}}
 
     </section>
 
@@ -359,7 +370,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const reviewForm = document.getElementById('reviewForm');
             const reviewMessage = document.getElementById('review-message');
@@ -433,28 +444,28 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Untuk semua tombol/link dengan class btn-require-login
-    document.querySelectorAll('.btn-require-login').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('loginModal').style.display = 'block';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Untuk semua tombol/link dengan class btn-require-login
+            document.querySelectorAll('.btn-require-login').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('loginModal').style.display = 'block';
+                });
+            });
+            document.getElementById('closeLoginModal').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+            // Tutup modal jika klik di luar kotak modal
+            document.getElementById('loginModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
         });
-    });
-    document.getElementById('closeLoginModal').addEventListener('click', function() {
-        document.getElementById('loginModal').style.display = 'none';
-    });
-    // Tutup modal jika klik di luar kotak modal
-    document.getElementById('loginModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.style.display = 'none';
-        }
-    });
-});
-</script>
+    </script>
 
 </body>
 

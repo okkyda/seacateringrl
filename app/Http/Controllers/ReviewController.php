@@ -26,6 +26,6 @@ class ReviewController extends Controller
         $review->save();
 
         // Return a response (you can customize this as needed)
-        return response()->json(['message' => 'Review submitted successfully!'], 201);
+        return redirect()->route('home')->with('success', 'Review berhasil ditambahkan!');
     }
 }

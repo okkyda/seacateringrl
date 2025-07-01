@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\DashboardUserController;
+use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,12 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return view('index');
+     $reviews = \App\Models\Review::latest()->get();
+    return view('index', compact('reviews'));
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+// Route::get('/dashboard-adm', [AdminDashboardController::class, 'index'])->name('dashboard');
 // Route::get('/home', function () {
 //     return view('index');
 // })->name('home');
@@ -64,5 +65,28 @@ Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store
 
 
 Route::post('/subscriptions', [SubscriptionController::class, 'store'])->name('subscriptions.store');
+
+
+// Dashboard Admin hanya untuk admin
+Route::get('/dashboard-admin', [AdminDashboardController::class, 'index'])
+    ->middleware('role:admin')
+    ->name('dashboard-admin');
+
+
+
+// Dashboard User hanya untuk user
+Route::get('/dashboard', [DashboardUserController::class, 'index'])
+    ->middleware('role:user')
+    ->name('dashboard.user');
+
+
+Route::get('/subscription', function () {
+    return view('subscription');
+})->middleware(['auth', 'role:user'])->name('subscription');
+
+Route::post('/subscriptions', [SubscriptionController::class, 'store'])
+    ->middleware(['auth', 'role:user'])
+    ->name('subscriptions.store');
+
 
 require __DIR__.'/auth.php';

@@ -19,17 +19,17 @@ class SubscriptionController extends Controller
             'allergies' => 'nullable|string|max:1000',
         ]);
 
-        // Simpan sebagai string (bisa juga json_encode jika ingin)
+        // Simpan sebagai string
         $validated['meal_type'] = implode(',', $validated['mealType']);
         $validated['days'] = implode(',', $validated['days']);
 
         Subscription::create([
             'user_id' => Auth::id(),
-            'name'      => $validated['name'],
-            'phone'     => $validated['phone'],
-            'plan'      => $validated['plan'],
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'plan' => $validated['plan'],
             'meal_type' => $validated['meal_type'],
-            'days'      => $validated['days'],
+            'days' => $validated['days'],
             'allergies' => $validated['allergies'] ?? null,
             'active_until' => now()->addMonth(),
         ]);
