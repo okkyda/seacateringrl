@@ -10,6 +10,16 @@
 </head>
 
 <body>
+<!-- Modal Login Required -->
+    <div id="loginModal" class="modal-logins">
+        <div class="modal-login-content">
+            <p>Anda harus login terlebih dahulu.</p>
+            <div class="modal-login-actions">
+                <a href="{{ route('login') }}" class="btn-submit">Login</a>
+                <button id="closeLoginModal" class="btn-cancel">Tutup</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Start -->
     <section class="hero-meal" id="home">
@@ -28,10 +38,49 @@
                 <a href="{{ route('home') }}#about">About Us</a>
                 <a href="{{ route('meals') }}" class="active">Meal</a>
                 <a href="{{ route('catchus') }}">Catch Us!</a>
-                <a href="{{ route('subscription') }}">Subscription</a>
-                <a href="{{ route('login') }}" class="login-mobile">Login</a>
+                @auth
+                    @php
+                        $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
+                            ->where('active_until', '>=', now())
+                            ->exists();
+                    @endphp
+                    @if ($hasSubscription)
+                        <a href="{{ route('dashboard.user') }}"
+                            class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                    @else
+                        <a href="{{ route('subscription') }}"
+                            class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                    @endif
+                @endauth
+
+                @guest
+                    <a href="#" class="btn-require-login">Subscription</a>
+                @endguest
+                @guest
+                    <a href="{{ route('login') }}" class="login-mobile">Login</a>
+                @endguest
             </div>
-            <a href="{{ route('login') }}" class="login-desktop">Login</a>
+            @guest
+                <a href="{{ route('login') }}" class="login-desktop">Login</a>
+            @endguest
+            @auth
+                <div class="dropdown" style="margin-left: 12px;">
+                    <button class="dropbtn">
+                        <img src="{{ Auth::user()->profile_picture ?? asset('image/prof.jpg') }}"
+                            class="profile-img-navbar" alt="Profile">
+                        <span class="profile-name">{{ Auth::user()->name }}</span>
+                        <span>&#9662;</span>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ route('dashboard.user') }}">Profile</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item"
+                                style="background:none;border:none;cursor:pointer;">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            @endauth
             <div class="extra-search">
                 <a href="#" id="nav-hamburger"> <i data-feather="menu"></i></a>
             </div>
@@ -130,7 +179,8 @@
                     <div>
                         <div class="meal-card-title">Weight Loss Program</div>
                         <div class="meal-card-price">Rp 350.000 / week</div>
-                        <div class="meal-card-desc">Program diet sehat untuk menurunkan berat badan dengan menu seimbang
+                        <div class="meal-card-desc">Program diet sehat untuk menurunkan berat badan dengan menu
+                            seimbang
                             dan kalori terkontrol.</div>
                     </div>
                     <button class="btn-details" data-modal="modal1">See More Details</button>
@@ -428,6 +478,27 @@
     <!-- Icons -->
     <script>
         feather.replace();
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Untuk semua tombol/link dengan class btn-require-login
+            document.querySelectorAll('.btn-require-login').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('loginModal').style.display = 'block';
+                });
+            });
+            document.getElementById('closeLoginModal').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+            // Tutup modal jika klik di luar kotak modal
+            document.getElementById('loginModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
     </script>
 
     <script src="js/script.js" type="text/javascript"></script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subscription;
+use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
@@ -23,14 +24,16 @@ class SubscriptionController extends Controller
         $validated['days'] = implode(',', $validated['days']);
 
         Subscription::create([
+            'user_id' => Auth::id(),
             'name'      => $validated['name'],
             'phone'     => $validated['phone'],
             'plan'      => $validated['plan'],
             'meal_type' => $validated['meal_type'],
             'days'      => $validated['days'],
             'allergies' => $validated['allergies'] ?? null,
+            'active_until' => now()->addMonth(),
         ]);
 
-        return response()->json(['message' => 'Subscription berhasil!']);
+        return redirect()->route('dashboard.user')->with('success', 'Berhasil subscribe!');
     }
 }

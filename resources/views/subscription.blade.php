@@ -20,10 +20,49 @@
             <a href="{{ route('home') }}#about">About Us</a>
             <a href="{{ route('meals') }}">Meal</a>
             <a href="{{ route('catchus') }}">Catch Us!</a>
-            <a href="{{ route('subscription') }}" class="active">Subscription</a>
-            <a href="{{ route('login') }}" class="login-mobile">Login</a>
+            @auth
+                @php
+                    $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
+                        ->where('active_until', '>=', now())
+                        ->exists();
+                @endphp
+                @if ($hasSubscription)
+                    <a href="{{ route('dashboard.user') }}"
+                        class="{{ request()->routeIs('dashboard.user') ? 'active' : '' }}">Dashboard</a>
+                @else
+                    <a href="{{ route('subscription') }}"
+                        class="{{ request()->routeIs('subscription') ? 'active' : '' }}">Subscription</a>
+                @endif
+            @endauth
+
+            @guest
+                <a href="#" class="btn-require-login">Subscription</a>
+            @endguest
+            @guest
+                <a href="{{ route('login') }}" class="login-mobile">Login</a>
+            @endguest
         </div>
-        <a href="{{ route('login') }}" class="login-desktop">Login</a>
+        @guest
+            <a href="{{ route('login') }}" class="login-desktop">Login</a>
+        @endguest
+        @auth
+            <div class="dropdown" style="margin-left: 12px;">
+                <button class="dropbtn">
+                    <img src="{{ Auth::user()->profile_picture ?? asset('image/prof.jpg') }}" class="profile-img-navbar"
+                        alt="Profile">
+                    <span class="profile-name">{{ Auth::user()->name }}</span>
+                    <span>&#9662;</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ route('dashboard.user') }}">Profile</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="dropdown-item"
+                            style="background:none;border:none;cursor:pointer;">Logout</button>
+                    </form>
+                </div>
+            </div>
+        @endauth
         <div class="extra-search">
             <a href="#" id="nav-hamburger"> <i data-feather="menu"></i></a>
         </div>
@@ -124,6 +163,9 @@
             const successModal = document.getElementById('successModal');
             const btnCloseSuccess = document.getElementById('btnCloseSuccess');
 
+            // Pastikan modal tidak aktif saat halaman dimuat
+            modal.classList.remove('active');
+
             // Form Validation for Subscription Form
             subscriptionForm.addEventListener('submit', function(e) {
                 const mealTypes = document.querySelectorAll('input[name="mealType[]"]:checked');
@@ -148,7 +190,9 @@
                     e.preventDefault();
                     formMessage.innerHTML = '';
                     formMessage.style.display = 'none';
-                    modal.classList.add('active');
+
+                    // Show confirmation modal only after validation is successful
+                    modal.classList.add('active'); // Modal aktif hanya setelah form valid
                 }
             });
 
@@ -184,10 +228,17 @@
                     });
             });
 
-            // Close success modal
+            // Close success modal with button
             btnCloseSuccess.addEventListener('click', function() {
                 successModal.style.display = 'none';
                 window.location.href = "{{ route('home') }}";
+            });
+
+            // Close success modal if clicked outside
+            successModal.addEventListener('click', function(e) {
+                if (e.target === successModal) {
+                    successModal.style.display = 'none';
+                }
             });
 
             // Calculate Total Price based on Plan, Meal Types, and Days
@@ -204,8 +255,8 @@
             function calculateTotalPrice() {
                 const plan = document.getElementById('plan').value;
                 const planPrice = planPrices[plan] || 0;
-                const mealTypes = document.querySelectorAll('input[name="mealType"]:checked').length;
-                const days = document.querySelectorAll('input[name="days"]:checked').length;
+                const mealTypes = document.querySelectorAll('input[name="mealType[]"]:checked').length;
+                const days = document.querySelectorAll('input[name="days[]"]:checked').length;
 
                 if (planPrice && mealTypes && days) {
                     const total = planPrice * mealTypes * days * 4.3;
@@ -218,19 +269,40 @@
             }
 
             document.getElementById('plan').addEventListener('change', calculateTotalPrice);
-            document.querySelectorAll('input[name="mealType"]').forEach(cb => cb.addEventListener('change',
+            document.querySelectorAll('input[name="mealType[]"]').forEach(cb => cb.addEventListener('change',
                 calculateTotalPrice));
-            document.querySelectorAll('input[name="days"]').forEach(cb => cb.addEventListener('change',
+            document.querySelectorAll('input[name="days[]"]').forEach(cb => cb.addEventListener('change',
                 calculateTotalPrice));
 
-            // Close modal if clicked outside
-            confirmationModal.addEventListener('click', function(e) {
-                if (e.target === confirmationModal) {
-                    confirmationModal.style.display = 'none';
+            // Close confirm modal if clicked outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
                 }
             });
         });
     </script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Untuk semua tombol/link dengan class btn-require-login
+    document.querySelectorAll('.btn-require-login').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginModal').style.display = 'block';
+        });
+    });
+    document.getElementById('closeLoginModal').addEventListener('click', function() {
+        document.getElementById('loginModal').style.display = 'none';
+    });
+    // Tutup modal jika klik di luar kotak modal
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+});
+</script>
 </body>
 
 </html>

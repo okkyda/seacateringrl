@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catch Us - SEA Catering</title>
+    <title>Dahsboard - SEA Catering</title>
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,27 +18,15 @@
 </head>
 
 <body>
-
-    <!-- Modal Login Required -->
-    <div id="loginModal" class="modal-logins">
-        <div class="modal-login-content">
-            <p>Anda harus login terlebih dahulu.</p>
-            <div class="modal-login-actions">
-                <a href="{{ route('login') }}" class="btn-submit">Login</a>
-                <button id="closeLoginModal" class="btn-cancel">Tutup</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Navbar -->
     <div>
         <nav class="navbar">
             <a href="#" class="nav-logo">SEA<span> Catering</span></a>
             <div class="navbar-nav">
-                <a href="{{ route('home') }}">Home</a>
+                <a href="{{ route('home') }}"">Home</a>
                 <a href="{{ route('home') }}#about">About Us</a>
                 <a href="{{ route('meals') }}">Meal</a>
-                <a href="{{ route('catchus') }}" class="active">Catch Us!</a>
+                <a href="{{ route('catchus') }}">Catch Us!</a>
                 @auth
                     @php
                         $hasSubscription = \App\Models\Subscription::where('user_id', Auth::id())
@@ -89,85 +77,58 @@
     </div>
     <!-- Navbar Ends -->
 
-    <!-- Hero Start -->
-    <section class="hero-contact" id="home">
-        <main class="content">
-            <h1>Our <span> Contact</span></h1>
-
-        </main>
-    </section>
-    <!-- Hero Ends -->
-
-    <!-- About Us -->
-    <section id="about" class="about">
-
-        <h2>Ask<span> Any</span> Question?</h2>
-
-        <div class="row">
-            <div class="about-img">
-                <img src="image/prof.jpg" alt="logo">
-            </div>
-
-            <div class="content">
-                <h2>Contact<span> Us</span> Now</h2>
-                <h3>Brian</h3>
-                <h3><span>08123456789</span></h3>
-                <a class="btn-menu" href="#"><i data-feather="phone"></i> Chat Via Whatsapp</a>
+    <div class="profile-container">
+        <div class="profile-section">
+            <div class="profile-header">
+                <img src="./image/prof.jpg" alt="Profile Picture" class="profile-img">
+                <div class="profile-info">
+                    <h2>Sami Rahman</h2>
+                    <p>Phone: +1 864-565-595-1236</p>
+                    <p>Email: sami.rahman002@gmail.com</p>
+                    <button class="save-btn">Save</button>
+                </div>
             </div>
         </div>
 
+        <div class="xpay-section">
+            @if (isset($subscription) && $subscription)
+                <div>
+                    <h3>Paket Aktif: {{ ucfirst($subscription->plan) }}</h3>
+                    <p>Meal Type: {{ $subscription->meal_type }}</p>
+                    <p>Active Until: {{ \Carbon\Carbon::parse($subscription->active_until)->format('d M Y') }}</p>
+                </div>
+            @else
+                <p>Anda belum berlangganan paket apapun.</p>
+            @endif
+        </div>
 
-    </section>
+        {{-- <div class="bills-section">
+            <h3>My Meals</h3>
+            <div class="bill">
+                <p>Phone bill</p>
+                <p>Phone bill</p>
+                <p>Phone bill</p>
+                <p>Phone bill</p>
+                <p>Phone bill</p>
+                <span class="status paid">Paid</span>
+            </div>
+        </div> --}}
 
+    </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <span>&copy; 2025 SEA Catering. All rights reserved.</span>
         </div>
     </footer>
 
-    <!-- Footer Ends -->
-    <!-- Icons -->
+
+
     <script>
         feather.replace();
     </script>
-
     <script src="js/script.js" type="text/javascript"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var path = window.location.pathname.split("/").pop();
-            if (path === "") path = "index.html";
-            document.querySelectorAll('.navbar-nav a').forEach(function(link) {
-                if (link.getAttribute('href') === path || link.getAttribute('href') === "#" + path.split(
-                        '.')[0]) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Untuk semua tombol/link dengan class btn-require-login
-            document.querySelectorAll('.btn-require-login').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.getElementById('loginModal').style.display = 'block';
-                });
-            });
-            document.getElementById('closeLoginModal').addEventListener('click', function() {
-                document.getElementById('loginModal').style.display = 'none';
-            });
-            // Tutup modal jika klik di luar kotak modal
-            document.getElementById('loginModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

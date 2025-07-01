@@ -10,13 +10,17 @@ class CreateSubscriptionsTable extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('name');
             $table->string('phone');
             $table->string('plan');
             $table->string('meal_type');
             $table->string('days');
             $table->text('allergies')->nullable();
+            $table->date('active_until')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
